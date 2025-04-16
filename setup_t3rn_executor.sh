@@ -10,8 +10,8 @@ sudo apt install -y build-essential git screen wget || { echo "Failed to install
 
 # Download and extract the latest executor binary
 echo "Downloading and extracting T3rn executor..."
-wget -q --show-progress https://github.com/t3rn/executor-release/releases/download/v0.53.1/executor-linux-v0.53.1.tar.gz || { echo "Download failed"; exit 1; }
-tar -xvzf executor-linux-v0.53.1.tar.gz || { echo "Extraction failed"; exit 1; }
+wget -q --show-progress https://github.com/t3rn/executor-release/releases/download/v0.64.0/executor-linux-v0.64.0.tar.gz || { echo "Download failed"; exit 1; }
+tar -xvzf executor-linux-v0.64.0.tar.gz || { echo "Extraction failed"; exit 1; }
 cd executor/executor/bin || { echo "Directory change failed"; exit 1; }
 
 # Export environment variables
@@ -22,16 +22,17 @@ export LOG_PRETTY=false
 export EXECUTOR_PROCESS_BIDS_ENABLED=true
 export EXECUTOR_PROCESS_ORDERS_ENABLED=true
 export EXECUTOR_PROCESS_CLAIMS_ENABLED=true
-export ENABLED_NETWORKS='arbitrum-sepolia,base-sepolia, optimism-sepolia,l2rn,unichain-sepolia'
+export ENABLED_NETWORKS='arbitrum-sepolia,base-sepolia, optimism-sepolia,l2rn, unichain-sepolia, monad-testnet, Unichain Sepolia'
 export EXECUTOR_MAX_L3_GAS_PRICE=3000
 
 # Add RPC endpoints
 echo "Configuring RPC endpoints..."
 export RPC_ENDPOINTS='{
-    "l2rn": ["https://b2n.rpc.caldera.xyz/http"],
+    "l2rn": ["https://t3rn-b2n.blockpi.network/v1/rpc/public", "https://b2n.rpc.caldera.xyz/http"],
     "arbt": ["https://arbitrum-sepolia.drpc.org", "https://sepolia-rollup.arbitrum.io/rpc"],
     "bast": ["https://base-sepolia-rpc.publicnode.com", "https://base-sepolia.drpc.org"],
     "blst": ["https://sepolia.blast.io", "https://blast-sepolia.drpc.org"],
+    "mont": ["https://testnet-rpc.monad.xyz"],
     "opst": ["https://sepolia.optimism.io", "https://optimism-sepolia.drpc.org"],
     "unit": ["https://unichain-sepolia.drpc.org", "https://sepolia.unichain.org"]
 }'
