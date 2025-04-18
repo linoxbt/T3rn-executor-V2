@@ -11,31 +11,50 @@ wget -q --show-progress https://github.com/t3rn/executor-release/releases/downlo
 tar -xvzf executor-linux-v0.53.1.tar.gz || { echo "Extraction failed"; exit 1; }
 cd executor/executor/bin || { echo "Directory change failed"; exit 1; }
 
+# Export environment variables
+echo "Setting environment variables..."
 export ENVIRONMENT=testnet
 export LOG_LEVEL=debug
 export LOG_PRETTY=false
-
 export EXECUTOR_PROCESS_BIDS_ENABLED=true
 export EXECUTOR_PROCESS_ORDERS_ENABLED=true
 export EXECUTOR_PROCESS_CLAIMS_ENABLED=true
-export EXECUTOR_MAX_L3_GAS_PRICE=1000
+export ENABLED_NETWORKS='arbitrum-sepolia,base-sepolia,optimism-sepolia,l2rn,unichain-sepolia'
+export EXECUTOR_MAX_L3_GAS_PRICE=3000
 
+# Add RPC endpoints (properly formatted)
+echo "Configuring RPC endpoints..."
+export RPC_ENDPOINTS='{"l2rn": ["https://b2n.rpc.caldera.xyz"], "arbt": ["https://arbitrum-sepolia.drpc.org", "https://sepolia-rollup.arbitrum.io/rpc"], "bast": ["https://base-sepolia-rpc.publicnode.com", "https://base-sepolia.drpc.org"], "opst": ["https://sepolia.optimism.io", "https://optimism-sepolia.drpc.org"], "unit": ["https://unichain-sepolia.drpc.org", "https://sepolia.unichain.org"]}'
 
-export PRIVATE_KEY_LOCAL=
+# Display ASCII art and info
+echo "Starting T3rn executor setup..."
+cat << 'EOF'
 
-export ENABLED_NETWORKS='arbitrum-sepolia,base-sepolia,optimism-sepolia,l2rn'
+    ██╗     ██╗███╗   ██╗ ██████╗ ██╗  ██╗██████╗ ████████╗
+    ██║     ██║████╗  ██║██╔═══██╗╚██╗██╔╝██╔══██╗╚══██╔══╝
+    ██║     ██║██╔██╗ ██║██║   ██║ ╚███╔╝ ██████╔╝   ██║
+    ██║     ██║██║╚██╗██║██║   ██║ ██╔██╗ ██╔══██╗   ██║
+    ███████╗██║██║ ╚████║╚██████╔╝██╔╝ ██╗██████╔╝   ██║
+    ╚══════╝╚═╝╚═╝  ╚═══╝ ╚═════╝ ╚═╝  ╚═╝╚═════╝    ╚═╝
 
-export NETWORKS_DISABLED='blast-sepolia,monad-testnet,unichain-sepolia,arbitrum,base,optimism'
+=== T3rn Testnet V2 ===
+EOF
+sleep 1
 
-export RPC_ENDPOINTS='{
-    "l2rn": ["https://t3rn-b2n.blockpi.network/v1/rpc/public"],
-    "arbt": ["https://arbitrum-sepolia.drpc.org/"],
-    "bast": ["https://base-sepolia-rpc.publicnode.com/"],
-    "opst": ["https://sepolia.optimism.io/"]
-}'
+# Ask user for private key securely
+read -s -p "Enter your T3rn Wallet Private Key: " PRIVATE_KEY_LOCAL
+echo
+export PRIVATE_KEY_LOCAL
 
-export EXECUTOR_PROCESS_PENDING_ORDERS_FROM_API=false
-export EXECUTOR_PROCESS_ORDERS_API_ENABLED=false
-export EXECUTOR_ENABLE_BATCH_BIDDING=true
+# Start executor in a Screen session
+echo "Starting T3rn executor in Screen session..."
+screen -dmS t3rn bash -c "./executor; exec bash"
 
-./executor
+# Wait briefly and check if it’s running
+sleep 5
+if screen -list | grep -q "t3rn"; then
+    echo "Executor started successfully in Screen session 't3rn'. Use 'screen -r t3rn' to attach."
+else
+    echo "Executor failed to start. Check logs or retry."
+    exit 1
+fi
