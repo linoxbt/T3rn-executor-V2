@@ -22,20 +22,23 @@ export LOG_PRETTY=false
 export EXECUTOR_PROCESS_BIDS_ENABLED=true
 export EXECUTOR_PROCESS_ORDERS_ENABLED=true
 export EXECUTOR_PROCESS_CLAIMS_ENABLED=true
-export ENABLED_NETWORKS='arbitrum-sepolia,base-sepolia, optimism-sepolia,l2rn, unichain-sepolia, monad-testnet, Unichain Sepolia'
 export EXECUTOR_MAX_L3_GAS_PRICE=3000
+export PRIVATE_KEY_LOCAL=
 
-# Add RPC endpoints
-echo "Configuring RPC endpoints..."
+export ENABLED_NETWORKS='arbitrum-sepolia,base-sepolia,optimism-sepolia,l2rn'
+
+export NETWORKS_DISABLED='blast-sepolia,monad-testnet,unichain-sepolia,arbitrum,base,optimism'
+
 export RPC_ENDPOINTS='{
-    "l2rn": ["https://t3rn-b2n.blockpi.network/v1/rpc/public", "https://b2n.rpc.caldera.xyz/http"],
-    "arbt": ["https://arbitrum-sepolia.drpc.org", "https://sepolia-rollup.arbitrum.io/rpc"],
-    "bast": ["https://base-sepolia-rpc.publicnode.com", "https://base-sepolia.drpc.org"],
-    "blst": ["https://sepolia.blast.io", "https://blast-sepolia.drpc.org"],
-    "mont": ["https://testnet-rpc.monad.xyz"],
-    "opst": ["https://sepolia.optimism.io", "https://optimism-sepolia.drpc.org"],
-    "unit": ["https://unichain-sepolia.drpc.org", "https://sepolia.unichain.org"]
+    "l2rn": ["https://t3rn-b2n.blockpi.network/v1/rpc/public"],
+    "arbt": ["https://arbitrum-sepolia.drpc.org/"],
+    "bast": ["https://base-sepolia-rpc.publicnode.com/"],
+    "opst": ["https://sepolia.optimism.io/"]
 }'
+
+export EXECUTOR_PROCESS_PENDING_ORDERS_FROM_API=false
+export EXECUTOR_PROCESS_ORDERS_API_ENABLED=false
+export EXECUTOR_ENABLE_BATCH_BIDDING=true
 
 # Display ASCII art and info
 echo "Starting T3rn executor setup..."
