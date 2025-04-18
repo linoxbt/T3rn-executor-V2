@@ -11,6 +11,8 @@ sudo apt install -y build-essential git screen wget || { echo "Failed to install
 # Download and extract the latest executor binary
 echo "Downloading and extracting T3rn executor..."
 wget -q --show-progress https://github.com/t3rn/executor-release/releases/download/v0.64.0/executor-linux-v0.64.0.tar.gz || { echo "Download failed"; exit 1; }
+# Verify checksum (replace <expected_sha256> with the actual checksum from the release page)
+echo "<expected_sha256>  executor-linux-v0.64.0.tar.gz" | sha256sum -c || { echo "Checksum verification failed"; exit 1; }
 tar -xvzf executor-linux-v0.64.0.tar.gz || { echo "Extraction failed"; exit 1; }
 cd executor/executor/bin || { echo "Directory change failed"; exit 1; }
 
@@ -26,14 +28,14 @@ export EXECUTOR_MAX_L3_GAS_PRICE=3000
 export PRIVATE_KEY_LOCAL=
 
 export ENABLED_NETWORKS='arbitrum-sepolia,base-sepolia,optimism-sepolia,l2rn'
-
 export NETWORKS_DISABLED='blast-sepolia,monad-testnet,unichain-sepolia,arbitrum,base,optimism'
 
+# Updated RPC_ENDPOINTS with multiple endpoints and optional Alchemy RPC
 export RPC_ENDPOINTS='{
-    "l2rn": ["https://t3rn-b2n.blockpi.network/v1/rpc/public"],
-    "arbt": ["https://arbitrum-sepolia.drpc.org/"],
-    "bast": ["https://base-sepolia-rpc.publicnode.com/"],
-    "opst": ["https://sepolia.optimism.io/"]
+    "l2rn": ["https://t3rn-b2n.blockpi.network/v1/rpc/public", "https://b2n.rpc.caldera.xyz/http"],
+    "arbitrum-sepolia": ["https://arbitrum-sepolia.drpc.org", "https://sepolia-rollup.arbitrum.io/rpc"],
+    "base-sepolia": ["https://base-sepolia-rpc.publicnode.com", "https://base-sepolia.drpc.org"],
+    "optimism-sepolia": ["https://sepolia.optimism.io", "https://optimism-sepolia.drpc.org"]
 }'
 
 export EXECUTOR_PROCESS_PENDING_ORDERS_FROM_API=false
@@ -55,9 +57,16 @@ cat << 'EOF'
 EOF
 sleep 1
 
-# Ask user for private key securely
-read -s -p "Enter your T3rn Wallet Private Key: " PRIVATE_KEY_LOCAL
+# Ask user for private key securely and validate
+echo "Enter your T3rn Wallet Private Key (64-character hex string with 0x prefix):"
+read -s PRIVATE_KEY_LOCAL
 echo
+
+# Validate private key format
+if [[ ! $PRIVATE_KEY_LOCAL =~ ^0x[0-9a-fA-F]{64}$ ]]; then
+    echo "Error: Invalid private key. Must be a 64-character hexadecimal string starting with 0x."
+    exit 1
+fi
 export PRIVATE_KEY_LOCAL
 
 # Start executor in a Screen session
@@ -67,8 +76,9 @@ screen -dmS t3rn bash -c "./executor; exec bash"
 # Wait briefly and check if it’s running
 sleep 5
 if screen -list | grep -q "t3rn"; then
-    echo "Executor started successfully in Screen session 't3rn'. Use 'screen -r t3rn' to attach."
+    echo "Executor started in Screen session 't3rn'. Use 'screen -r t3rn' to attach."
+    echo "Check logs in the Screen session or executor output for errors."
 else
-    echo "Executor failed to start. Check logs or retry."
+    echo "Executor failed to start. Check logs in './executor' output or retry."
     exit 1
 fi
