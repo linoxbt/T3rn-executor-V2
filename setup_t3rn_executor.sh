@@ -11,8 +11,8 @@ sudo apt install -y build-essential git screen wget || { echo "Failed to install
 # Download and extract the latest executor binary
 echo "Downloading and extracting T3rn executor..."
 wget -q --show-progress https://github.com/t3rn/executor-release/releases/download/v0.64.0/executor-linux-v0.64.0.tar.gz || { echo "Download failed"; exit 1; }
-# Verify checksum (replace <expected_sha256> with the actual checksum from the release page)
-echo "<expected_sha256>  executor-linux-v0.64.0.tar.gz" | sha256sum -c || { echo "Checksum verification failed"; exit 1; }
+# Replace 'a1b2c3d4e5f6...' with the actual SHA256 checksum from the release page
+echo "a1b2c3d4e5f6...  executor-linux-v0.64.0.tar.gz" | sha256sum -c || { echo "Checksum verification failed"; exit 1; }
 tar -xvzf executor-linux-v0.64.0.tar.gz || { echo "Extraction failed"; exit 1; }
 cd executor/executor/bin || { echo "Directory change failed"; exit 1; }
 
@@ -33,9 +33,9 @@ export NETWORKS_DISABLED='blast-sepolia,monad-testnet,unichain-sepolia,arbitrum,
 # Updated RPC_ENDPOINTS with multiple endpoints and optional Alchemy RPC
 export RPC_ENDPOINTS='{
     "l2rn": ["https://t3rn-b2n.blockpi.network/v1/rpc/public", "https://b2n.rpc.caldera.xyz/http"],
-    "arbitrum-sepolia": ["https://arbitrum-sepolia.drpc.org", "https://sepolia-rollup.arbitrum.io/rpc"],
-    "base-sepolia": ["https://base-sepolia-rpc.publicnode.com", "https://base-sepolia.drpc.org"],
-    "optimism-sepolia": ["https://sepolia.optimism.io", "https://optimism-sepolia.drpc.org"]
+    "arbitrum-sepolia": ["https://arbitrum-sepolia.drpc.org", "https://sepolia-rollup.arbitrum.io/rpc", "https://arb-sepolia.g.alchemy.com/v2/your-api-key"],
+    "base-sepolia": ["https://base-sepolia-rpc.publicnode.com", "https://base-sepolia.drpc.org", "https://base-sepolia.g.alchemy.com/v2/your-api-key"],
+    "optimism-sepolia": ["https://sepolia.optimism.io", "https://optimism-sepolia.drpc.org", "https://opt-sepolia.g.alchemy.com/v2/your-api-key"]
 }'
 
 export EXECUTOR_PROCESS_PENDING_ORDERS_FROM_API=false
